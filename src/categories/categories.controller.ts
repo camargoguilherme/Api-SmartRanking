@@ -19,13 +19,13 @@ import { CategoryParameterValidationPipe } from './pipes/category-parameters-val
 export class CategoriesController {
   constructor(private readonly categoriesService: CategoriesService) { }
 
-  @Put(':_id')
+  @Put(':categoria')
   @UsePipes(ValidationPipe)
   async updateCategory(
-    @Param('_id', CategoryParameterValidationPipe) _id: string,
+    @Param('categoria', CategoryParameterValidationPipe) categoria: string,
     @Body() updateCategoryDto: UpdateCategoryDto,
   ) {
-    return this.categoriesService.updateCategory(_id, updateCategoryDto);
+    return this.categoriesService.updateCategory(categoria, updateCategoryDto);
   }
 
   @Post()
@@ -39,17 +39,17 @@ export class CategoriesController {
     return this.categoriesService.searchAllCategories();
   }
 
-  @Get(':_id')
+  @Get(':category')
   async searchCategoriesById(
-    @Param('_id', CategoryParameterValidationPipe) _id: string,
+    @Param('category', CategoryParameterValidationPipe) category: string,
   ): Promise<Category[] | Category> {
-    return this.categoriesService.searchCategoryById(_id);
+    return this.categoriesService.searchCategoryById(category);
   }
 
-  @Delete(':_id')
+  @Delete(':category')
   async deleteCategory(
-    @Param('_id', CategoryParameterValidationPipe) _id: string,
+    @Param('category', CategoryParameterValidationPipe) category: string,
   ): Promise<Category> {
-    return this.categoriesService.deleteCategoryById(_id);
+    return this.categoriesService.deleteCategoryById(category);
   }
 }

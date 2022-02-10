@@ -19,17 +19,17 @@ export class CategoriesService {
     @InjectModel('Category') private readonly CategoryModel: Model<Category>,
   ) { }
 
-  async updateCategory(_id: string, updateCategoryDto: UpdateCategoryDto) {
+  async updateCategory(category: string, updateCategoryDto: UpdateCategoryDto) {
     this.logger.log(
       `[updateCategory] Category ${JSON.stringify(updateCategoryDto, null, 2)}`,
     );
-    const CategoryUpdated = await this.CategoryModel.findByIdAndUpdate(
-      _id,
+    const CategoryUpdated = await this.CategoryModel.findOneAndUpdate(
+      { category },
       { $set: updateCategoryDto },
       { new: true },
     ).exec();
     if (!CategoryUpdated)
-      throw new NotFoundException(`Category with _id '${_id}' not found`);
+      throw new NotFoundException(`Category '${category}' not found`);
 
     this.logger.log(
       `[updateCategory] Category ${JSON.stringify(CategoryUpdated, null, 2)}`,
@@ -48,9 +48,7 @@ export class CategoriesService {
     const hasCategory = await this.CategoryModel.findOne({ category }).exec();
 
     if (hasCategory)
-      throw new ConflictException(
-        `Category with category '${category}' already registered`,
-      );
+      throw new ConflictException(`Category '${category}' already registered`);
 
     const CategoryCreated = await this.CategoryModel.create(createCategoryDto);
     this.logger.log(
@@ -73,12 +71,12 @@ export class CategoriesService {
   }
 
   // Find Category by email
-  async searchCategoryById(_id: string): Promise<Category> {
-    this.logger.log(`[searchCategoryById] _id ${_id}`);
-    const CategoryFound = await this.CategoryModel.findById(_id).exec();
+  async searchCategoryById(category: string): Promise<Category> {
+    this.logger.log(`[searchCategoryById] category ${category}`);
+    const CategoryFound = await this.CategoryModel.findOne({ category }).exec();
 
     if (!CategoryFound)
-      throw new NotFoundException(`Category with _id '${_id}' not found`);
+      throw new NotFoundException(`Category '${category}' not found`);
 
     this.logger.log(
       `[searchCategoryById] Category ${JSON.stringify(CategoryFound, null, 2)}`,
@@ -86,14 +84,14 @@ export class CategoriesService {
     return CategoryFound;
   }
 
-  async deleteCategoryById(_id: string): Promise<Category> {
-    this.logger.log(`[deleteCategoryById] _id ${_id}`);
-    const CategoryFound = await this.CategoryModel.findByIdAndRemove(
-      _id,
-    ).exec();
+  async deleteCategoryById(category: string): Promise<Category> {
+    this.logger.log(`[deleteCategoryById] category ${category}`);
+    const CategoryFound = await this.CategoryModel.findOneAndDelete({
+      category,
+    }).exec();
 
     if (!CategoryFound)
-      throw new NotFoundException(`Category with _id '${_id}' not found`);
+      throw new NotFoundException(`Category '${category}' not found`);
 
     return CategoryFound;
   }
