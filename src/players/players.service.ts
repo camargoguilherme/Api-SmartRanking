@@ -14,31 +14,66 @@ export class PlayersService {
   private players: Player[] = [];
 
   async updatePlayer(createPlayerDto: CreatePlayerDto) {
+    this.logger.log(
+      `[updatePlayer] player ${JSON.stringify(createPlayerDto, null, 2)}`,
+    );
+
     const { email } = createPlayerDto;
     const hasPlayer = this.players.find((player) => player.email == email);
-    if (!hasPlayer) throw new NotFoundException('Unregistered player');
+    if (!hasPlayer)
+      throw new NotFoundException(`Player with email '${email}' not found`);
 
     return this.update(hasPlayer, createPlayerDto);
   }
 
   async createPlayer(createPlayerDto: CreatePlayerDto): Promise<Player> {
+    this.createPlayer.name;
+    this.logger.log(
+      `[createPlayer] player ${JSON.stringify(createPlayerDto, null, 2)}`,
+    );
+
     const { email } = createPlayerDto;
     const hasPlayer = this.players.find((player) => player.email == email);
 
-    if (hasPlayer) throw new ConflictException('Player already registered');
+    if (hasPlayer)
+      throw new ConflictException(
+        `Player with email '${email}' already registered`,
+      );
 
     return this.create(createPlayerDto);
   }
 
   // Find all players
   async searchAllPlayers(): Promise<Player[]> {
+    this.logger.log(
+      `[searchAllPlayers] player[] ${JSON.stringify(this.players, null, 2)}`,
+    );
     return this.players;
   }
 
   // Find player by email
   async searchPlayerByEmail(email: string): Promise<Player> {
-    const _player = this.players.find((player) => player.email === email);
-    return _player;
+    this.logger.log(`[searchPlayerByEmail] email ${email}`);
+    const playerFound = this.players.find((player) => player.email === email);
+
+    if (!playerFound)
+      throw new NotFoundException(`Player with email '${email}' not found`);
+
+    this.logger.log(
+      `[searchPlayerByEmail] player ${JSON.stringify(playerFound, null, 2)}`,
+    );
+    return playerFound;
+  }
+
+  async deletePlayerByEmail(email: string): Promise<Player> {
+    this.logger.log(`[deletePlayerByEmail] email ${email}`);
+    const playerFound = this.players.find((player) => player.email === email);
+
+    if (!playerFound)
+      throw new NotFoundException(`Player with email '${email}' not found`);
+
+    this.players = this.players.filter((player) => player.email !== email);
+    return playerFound;
   }
 
   // Create player from parameter 'createPlayerDto'
@@ -56,7 +91,7 @@ export class PlayersService {
       urlProfilePlayer: 'https://google.com.br/foto123.jpg',
     };
     this.players.push(player);
-    this.logger.log(`player ${JSON.stringify(player, null, 2)}`, 'create');
+    this.logger.log(`[create] player ${JSON.stringify(player, null, 2)}`);
     return player;
   }
 
@@ -77,8 +112,7 @@ export class PlayersService {
     this.players[indexOfPlayer] = playerUpdated;
 
     this.logger.log(
-      `player ${JSON.stringify(playerUpdated, null, 2)}`,
-      'update',
+      `[update] player ${JSON.stringify(playerUpdated, null, 2)}`,
     );
     return playerUpdated;
   }

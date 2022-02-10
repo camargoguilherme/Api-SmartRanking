@@ -1,10 +1,11 @@
 import {
   Body,
-  ConflictException,
   Controller,
+  Delete,
   Get,
   Post,
   Put,
+  Query,
 } from '@nestjs/common';
 import { CreatePlayerDto } from './dtos/create-player.dto';
 import { Player } from './interfaces/player.interface';
@@ -24,7 +25,15 @@ export class PlayersController {
   }
 
   @Get()
-  async searchPlayers(): Promise<Player[] | Player> {
+  async searchPlayers(
+    @Query('email') email: string,
+  ): Promise<Player[] | Player> {
+    if (email) return this.playersService.searchPlayerByEmail(email);
     return this.playersService.searchAllPlayers();
+  }
+
+  @Delete()
+  async deletePlayer(@Query('email') email: string): Promise<Player> {
+    return this.playersService.deletePlayerByEmail(email);
   }
 }
