@@ -6,6 +6,8 @@ import {
   Post,
   Put,
   Query,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
 import { CreatePlayerDto } from './dtos/create-player.dto';
 import { Player } from './interfaces/player.interface';
@@ -20,6 +22,7 @@ export class PlayersController {
   }
 
   @Post()
+  @UsePipes(ValidationPipe)
   async createPlayer(@Body() createPlayerDto: CreatePlayerDto) {
     return this.playersService.createPlayer(createPlayerDto);
   }
