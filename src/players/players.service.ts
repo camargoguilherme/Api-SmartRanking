@@ -14,7 +14,6 @@ import { UpdatePlayerDto } from './dtos/update-player.dto';
 @Injectable()
 export class PlayersService {
   private readonly logger = new Logger(PlayersService.name);
-  private players: Player[] = [];
 
   constructor(
     @InjectModel('Player') private readonly playerModel: Model<Player>,
